@@ -1,0 +1,18 @@
+[package]
+name = "mini-alloc"
+keywords = ["wasm", "stylus", "allocator"]
+description = "Very simple global allocator"
+readme = "README.md"
+authors = ["Offchain Labs"]
+edition = "2021"
+version = "0.10.0"
+license = "MIT OR Apache-2.0"
+homepage = "https://github.com/OffchainLabs/stylus-sdk-rs"
+repository = "https://github.com/OffchainLabs/mini-alloc"
+rust-version = "1.71.0"
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3.0"
+
+[dependencies]
+cfg-if = "1.0.0"
