@@ -1,9 +1,12 @@
 // Copyright 2023-2024, Offchain Labs, Inc.
 // For licensing, see https://github.com/OffchainLabs/stylus-sdk-rs/blob/main/licenses/COPYRIGHT.md
 
+#[cfg(target_arch = "wasm32")]
+use core::arch::wasm32 as wasm;
+#[cfg(target_arch = "wasm64")]
+use core::arch::wasm64 as wasm;
 use core::{
     alloc::{GlobalAlloc, Layout},
-    arch::wasm32,
     num::NonZeroUsize as NonZero,
 };
 
@@ -55,7 +58,7 @@ unsafe fn alloc_impl(layout: Layout) -> Option<*mut u8> {
     let state_ref = &mut *&raw mut STATE;
     let (neg_offset, neg_bound) = state_ref.get_or_insert_with(|| {
         let heap_base = &__heap_base as *const u8 as usize;
-        let bound = MiniAlloc::PAGE_SIZE * wasm32::memory_size(0) - 1;
+        let bound = MiniAlloc::PAGE_SIZE * wasm::memory_size(0) - 1;
         (
             NonZero::new_unchecked(heap_base.wrapping_neg()),
             bound.wrapping_neg(),
@@ -67,7 +70,7 @@ unsafe fn alloc_impl(layout: Layout) -> Option<*mut u8> {
     let bytes_needed = neg_bound.saturating_sub(next_neg_offset + 1);
     if bytes_needed != 0 {
         let pages_needed = 1 + (bytes_needed - 1) / MiniAlloc::PAGE_SIZE;
-        if wasm32::memory_grow(0, pages_needed) == usize::MAX {
+        if wasm::memory_grow(0, pages_needed) == usize::MAX {
             return None;
         }
         *neg_bound -= MiniAlloc::PAGE_SIZE * pages_needed;
